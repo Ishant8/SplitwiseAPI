@@ -15,6 +15,7 @@ public class Payment {
     @Column(name = "id")
     private int id;
 
+
     @Column(name = "payment_amount",precision = 10, scale = 2)
     private BigDecimal paymentAmount;
 
