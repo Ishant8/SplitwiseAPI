@@ -1,6 +1,7 @@
 package com.splitwise.advanced.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.splitwise.advanced.entities.expense.Expense;
 import com.splitwise.advanced.entities.usercircle.UserCircle;
 import com.splitwise.advanced.entities.usercircle.UserCircleId;
 import com.splitwise.advanced.entities.userexpense.UserExpense;
@@ -67,6 +68,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserExpense> userExpenseList;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Expense> expenseList;
 
     public User() {
     }
