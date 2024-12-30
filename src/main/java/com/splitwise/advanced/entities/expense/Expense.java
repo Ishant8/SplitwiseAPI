@@ -2,6 +2,7 @@ package com.splitwise.advanced.entities.expense;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.splitwise.advanced.entities.circle.Circle;
+import com.splitwise.advanced.entities.user.User;
 import com.splitwise.advanced.entities.userexpense.UserExpense;
 import jakarta.persistence.*;
 
@@ -39,6 +40,10 @@ public class Expense {
     @JsonIgnore
     @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserExpense> userExpenseList;
+
+    @ManyToOne()
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
     public Expense() {
     }
