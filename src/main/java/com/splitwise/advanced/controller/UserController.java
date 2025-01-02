@@ -6,6 +6,8 @@ import com.splitwise.advanced.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -45,6 +47,11 @@ public class UserController {
         System.out.println(user);
 
         return user;
+    }
+
+    @GetMapping("/all")
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     @PutMapping("/preference")

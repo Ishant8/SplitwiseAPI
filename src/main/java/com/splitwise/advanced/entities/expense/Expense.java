@@ -7,6 +7,7 @@ import com.splitwise.advanced.entities.userexpense.UserExpense;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class Expense {
 
     @JsonIgnore
     @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserExpense> userExpenseList;
+    private List<UserExpense> userExpenseList = new ArrayList<>();
 
     @ManyToOne()
     @JoinColumn(name = "creator_id")
@@ -48,10 +49,9 @@ public class Expense {
     public Expense() {
     }
 
-    public Expense(String name, BigDecimal amount, Date expenseDate, String notes) {
+    public Expense(String name, BigDecimal amount, String notes) {
         this.name = name;
         this.amount = amount;
-        this.expenseDate = expenseDate;
         this.notes = notes;
     }
 
@@ -117,6 +117,14 @@ public class Expense {
 
     public void setUserExpenseList(List<UserExpense> userExpenseList) {
         this.userExpenseList = userExpenseList;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
     @Override
