@@ -14,6 +14,7 @@ import com.splitwise.advanced.entities.timezone.TimeZone;
 import jakarta.persistence.*;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -211,7 +212,7 @@ public class User {
         User bigger = this.equals(smaller) ? friend : this;
 
         UserFriendId id = new UserFriendId(smaller.getId(),bigger.getId());
-        UserFriend uf = new UserFriend(id,smaller,bigger);
+        UserFriend uf = new UserFriend(id, BigDecimal.valueOf(0.00), smaller,bigger);
 
         if (smaller == this) {
             this.friendsLinkedAsSmaller.add(uf);
@@ -234,7 +235,7 @@ public class User {
     }
 
     public List<String> getCircles() {
-        List<String> circles = this.userCircleList.stream().map(userCircle -> userCircle.getCircle().getName()).toList();
+        List<String> circles = this.userCircleList!=null?this.userCircleList.stream().map(userCircle -> userCircle.getCircle().getName()).toList():null;
         return circles;
     }
 
