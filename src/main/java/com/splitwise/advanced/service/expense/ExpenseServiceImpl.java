@@ -38,20 +38,18 @@ public class ExpenseServiceImpl implements ExpenseService {
         User user = userRepository.findByFullName(expenseReqDto.getCreatorName());
         expense.setCreator(user);
 
-        Expense finalExpense = expenseRepository.saveAndFlush(expense);
-
         expenseReqDto.getUserShares().forEach(us -> {
 
             String[] temp = us.trim().split(",");
 
             User u = userRepository.findByFullName(temp[0]);
 
-            UserExpenseId userExpenseId = new UserExpenseId(u.getId(), finalExpense.getId());
-            UserExpense userExpense = new UserExpense(userExpenseId, u, finalExpense, BigDecimal.valueOf(Integer.parseInt(temp[1])));
+            UserExpenseId userExpenseId = new UserExpenseId(u.getId(), 0);
+            UserExpense userExpense = new UserExpense(userExpenseId, u, expense, BigDecimal.valueOf(Double.parseDouble(temp[1])));
 
-            finalExpense.getUserExpenseList().add(userExpense);
+            expense.getUserExpenseList().add(userExpense);
         });
 
-        return expenseRepository.save(finalExpense);
+        return expenseRepository.save(expense);
     }
 }

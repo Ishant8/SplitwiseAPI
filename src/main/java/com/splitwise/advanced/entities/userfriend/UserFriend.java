@@ -42,6 +42,13 @@ public class UserFriend {
         this.bigger = bigger;
     }
 
+    public UserFriend(UserFriendId id, BigDecimal moneyOwed, User smaller, User bigger) {
+        this.id = id;
+        this.moneyOwed = moneyOwed;
+        this.smaller = smaller;
+        this.bigger = bigger;
+    }
+
     public UserFriend() {
     }
 
