@@ -37,6 +37,7 @@ public class Circle {
     @OneToMany(mappedBy = "circle", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCircle> users = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "circle", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserFriendCircle> userFriendCircle = new ArrayList<>();
 
@@ -83,7 +84,11 @@ public class Circle {
         this.users = users;
     }
 
-    public List<String> getUserFriendCircle() {
+    public List<UserFriendCircle> getUserFriendCircle() {
+        return userFriendCircle;
+    }
+
+    public List<String> getUserFriendCircleAsString() {
         return userFriendCircle.stream().map(ufc -> ufc.getCircle().getName()+" "+ufc.getUserFriend().getBigger().getFullName()+" "+ufc.getUserFriend().getSmaller().getFullName()+" Balance "+ufc.getOwesInGroup()).toList();
     }
 
