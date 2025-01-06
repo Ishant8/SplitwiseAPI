@@ -170,7 +170,7 @@ public class User {
         this.userCircleList = userCircleList;
     }
 
-    public List<String> getFriends() {
+    public List<String> getFriendsAsString() {
         List<String> allFriends = new ArrayList<>();
 
         for(UserFriend friend : friendsLinkedAsSmaller) {
@@ -183,6 +183,23 @@ public class User {
 
         return allFriends;
     }
+
+    @JsonIgnore
+    public List<User> getFriends() {
+        List<User> allFriends = new ArrayList<>();
+
+        for(UserFriend friend : friendsLinkedAsSmaller) {
+            allFriends.add(friend.getBigger());
+        }
+
+        for (UserFriend friend : friendsLinkedAsBigger){
+            allFriends.add(friend.getSmaller());
+        }
+
+        return allFriends;
+    }
+
+
 
     public void addFriend(User friend) {
 
