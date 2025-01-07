@@ -201,7 +201,6 @@ public class User {
     }
 
 
-
     public void addFriend(User friend) {
 
         if(this.equals(friend)) {
