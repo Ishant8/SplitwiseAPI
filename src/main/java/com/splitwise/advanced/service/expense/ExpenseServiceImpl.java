@@ -46,36 +46,38 @@ public class ExpenseServiceImpl implements ExpenseService {
 
             User u = userRepository.findByFullName(temp[0]);
 
-            UserFriend userFriend = updateUserFriend(user,u, temp[1],circle);
+            if(u.getId() != user.getId())
+            {
+                UserFriend userFriend = updateUserFriend(user, u, temp[1], circle);
 
-            if(user.getId() < u.getId()){
-                user.getFriendsLinkedAsSmaller().replaceAll(uf->{
-                    if(uf.getBigger().getId() == u.getId()){
-                        return userFriend;
-                    }
-                    return uf;
-                });
-                u.getFriendsLinkedAsBigger().replaceAll(uf->{
-                    if(uf.getSmaller().getId() == user.getId()){
-                        return userFriend;
-                    }
-                    return uf;
-                });
+                if (user.getId() < u.getId()) {
+                    user.getFriendsLinkedAsSmaller().replaceAll(uf -> {
+                        if (uf.getBigger().getId() == u.getId()) {
+                            return userFriend;
+                        }
+                        return uf;
+                    });
+                    u.getFriendsLinkedAsBigger().replaceAll(uf -> {
+                        if (uf.getSmaller().getId() == user.getId()) {
+                            return userFriend;
+                        }
+                        return uf;
+                    });
 
-            }
-            else{
-                user.getFriendsLinkedAsBigger().replaceAll(uf->{
-                    if(uf.getSmaller().getId() == u.getId()){
-                        return userFriend;
-                    }
-                    return uf;
-                });
-                u.getFriendsLinkedAsSmaller().replaceAll(uf->{
-                    if(uf.getBigger().getId() == user.getId()){
-                        return userFriend;
-                    }
-                    return uf;
-                });
+                } else {
+                    user.getFriendsLinkedAsBigger().replaceAll(uf -> {
+                        if (uf.getSmaller().getId() == u.getId()) {
+                            return userFriend;
+                        }
+                        return uf;
+                    });
+                    u.getFriendsLinkedAsSmaller().replaceAll(uf -> {
+                        if (uf.getBigger().getId() == user.getId()) {
+                            return userFriend;
+                        }
+                        return uf;
+                    });
+                }
             }
 
             UserExpenseId userExpenseId = new UserExpenseId(u.getId(), 0);
