@@ -7,5 +7,6 @@ import com.splitwise.advanced.entities.expense.Expense;
 public interface ExpenseService {
 
     Expense createExpense(ExpenseReqDto expenseReqDto);
+    ExpenseRespDto updateExpense(ExpenseReqDto expenseReqDto);
 
 }

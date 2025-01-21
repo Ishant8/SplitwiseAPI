@@ -25,8 +25,6 @@ public class ExpenseController {
 
     @GetMapping("/get")
     public List<ExpenseRespDto> getExpense() {
-
-
         List<Expense> expenses =  expenseRepository.findAll();
         return expenses.stream().map(expense -> ExpensePopulator.INSTANCE.populateExpense(expense)).toList();
     }
@@ -34,6 +32,11 @@ public class ExpenseController {
     @PostMapping("/add")
     public Expense addExpense(@RequestBody ExpenseReqDto expenseReqDto) {
         return expenseService.createExpense(expenseReqDto);
+    }
+
+    @PutMapping("/update")
+    public ExpenseRespDto updateExpense(@RequestBody ExpenseReqDto expenseReqDto) {
+        return expenseService.updateExpense(expenseReqDto);
     }
 
 //    @PostMapping("/user/add")
