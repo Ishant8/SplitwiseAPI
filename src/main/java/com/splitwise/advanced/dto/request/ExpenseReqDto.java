@@ -5,6 +5,7 @@ import java.util.List;
 
 public class ExpenseReqDto {
 
+    private int id;
     private String name;
     private BigDecimal amount;
     private String notes;
@@ -13,6 +14,14 @@ public class ExpenseReqDto {
     private String creatorName;
 
     public ExpenseReqDto() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

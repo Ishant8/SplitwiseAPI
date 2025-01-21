@@ -65,6 +65,7 @@ public class UserExpense {
     }
 
     public void setExpenseShare(BigDecimal expenseShare) {
+
         this.expenseShare = expenseShare;
     }
 

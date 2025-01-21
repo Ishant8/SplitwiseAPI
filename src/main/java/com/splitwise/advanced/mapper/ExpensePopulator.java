@@ -1,15 +1,16 @@
 package com.splitwise.advanced.mapper;
 
+import com.splitwise.advanced.dto.request.ExpenseReqDto;
 import com.splitwise.advanced.dto.response.ExpenseRespDto;
 import com.splitwise.advanced.dto.response.UserExpenseRespDto;
 import com.splitwise.advanced.entities.circle.Circle;
 import com.splitwise.advanced.entities.expense.Expense;
 import com.splitwise.advanced.entities.user.User;
 import com.splitwise.advanced.entities.userexpense.UserExpense;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import com.splitwise.advanced.repository.CircleRepository;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,11 @@ public interface ExpensePopulator {
 
     @Mapping(target = "involvedUsers", source = "userExpenseList")
     ExpenseRespDto populateExpense(Expense expense);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "expense.id", ignore = true)
+    void updateExpenseFromDto(ExpenseReqDto expenseReqDto, @MappingTarget Expense expense);
+
 
     default Map<Integer,String> mapCircle(Circle circle) {
         Map<Integer,String> map = new HashMap<>();
