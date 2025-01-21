@@ -1,5 +1,6 @@
 package com.splitwise.advanced.entities.payment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.splitwise.advanced.entities.circle.Circle;
 import com.splitwise.advanced.entities.userfriend.UserFriend;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "payment")
 public class Payment {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
