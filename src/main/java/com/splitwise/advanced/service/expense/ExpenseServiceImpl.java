@@ -13,6 +13,7 @@ import com.splitwise.advanced.mapper.ExpensePopulator;
 import com.splitwise.advanced.repository.CircleRepository;
 import com.splitwise.advanced.repository.ExpenseRepository;
 import com.splitwise.advanced.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -213,6 +214,9 @@ public class ExpenseServiceImpl implements ExpenseService {
                     Circle finalCircle = circle;
                     updatedUsers.forEach(u -> {
                         User user = userRepository.findByFullName(u);
+                        if(!user.getCircles().contains(finalCircle.getName())){
+                            throw new EntityNotFoundException(u +" is not in the group");
+                        }
 
 //                        int index = updatedUsers.indexOf(u);
                         String extractAmount = expenseReqDto.getUserShares().stream()
@@ -259,22 +263,31 @@ public class ExpenseServiceImpl implements ExpenseService {
                             }
                         }
 
-
-
-
-
                         UserExpenseId id = new UserExpenseId(user.getId(), expenseReqDto.getId());
                         UserExpense userExpense = new UserExpense(id,user,expense,amount);
 
                         expense.getUserExpenseList().add(userExpense);
                     });
                 }
-
-//                expense.getUserExpenseList()
             }
             return expensePopulator.populateExpense(expenseRepository.save(expense));
         }
         return null;
+    }
+
+    @Override
+    public void deleteExpense(int id) {
+        Expense expense = expenseRepository.findById(id).orElse(null);
+        if (expense != null) {
+            User creator = expense.getCreator();
+            expense.getUserExpenseList().forEach(u -> {
+                if(!Objects.equals(u.getUser().getFullName(), creator.getFullName())) {
+                    User user = u.getUser();
+                    updateUserFriend(creator,user,u.getExpenseShare().negate().toString(),expense.getCircle());
+                }
+            });
+            expenseRepository.delete(expense);
+        }
     }
 
     private UserFriend updateUserFriend(User lender, User debtor, String sharedMoney, Circle circle) {
