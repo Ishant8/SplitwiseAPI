@@ -39,6 +39,11 @@ public class ExpenseController {
         return expenseService.updateExpense(expenseReqDto);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public void deleteExpense(@PathVariable int id) {
+        expenseService.deleteExpense(id);
+    }
+
 //    @PostMapping("/user/add")
 //    public Expense addExpenseWithUser(@RequestBody Expense expense) {
 //

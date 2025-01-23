@@ -8,5 +8,6 @@ public interface ExpenseService {
 
     Expense createExpense(ExpenseReqDto expenseReqDto);
     ExpenseRespDto updateExpense(ExpenseReqDto expenseReqDto);
+    void deleteExpense(int id);
 
 }
