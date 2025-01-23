@@ -30,14 +30,15 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment createPayment(PaymentReqDto paymentReqDto) {
 
         Payment payment = new Payment();
-        payment.setPaymentAmount(paymentReqDto.getAmount());
 
         UserFriend userFriend;
         if(paymentReqDto.getPaymentFrom() < paymentReqDto.getPaymentTo()){
-            userFriend = updateDues(paymentReqDto.getPaymentFrom(), paymentReqDto.getPaymentTo(), paymentReqDto.getAmount(), paymentReqDto.getCircleName(),payment,true);
+            userFriend = createDues(paymentReqDto.getPaymentFrom(), paymentReqDto.getPaymentTo(), paymentReqDto.getAmount().negate(), paymentReqDto.getCircleName());
+            payment.setPaymentAmount(paymentReqDto.getAmount().negate());
         }
         else{
-           userFriend = updateDues(paymentReqDto.getPaymentTo(), paymentReqDto.getPaymentFrom(), paymentReqDto.getAmount(), paymentReqDto.getCircleName(),payment,false);
+           userFriend = createDues(paymentReqDto.getPaymentTo(), paymentReqDto.getPaymentFrom(), paymentReqDto.getAmount(), paymentReqDto.getCircleName());
+           payment.setPaymentAmount(paymentReqDto.getAmount());
         }
         payment.setUserFriend(userFriend);
 
@@ -60,35 +61,79 @@ public class PaymentServiceImpl implements PaymentService {
         UserFriend userFriend;
         if(paymentReqDto.getPaymentFrom() < paymentReqDto.getPaymentTo())
         {
-            userFriend = updateDues(paymentReqDto.getPaymentFrom(), paymentReqDto.getPaymentTo(), paymentReqDto.getAmount(), paymentReqDto.getCircleName(),payment,true);
+            userFriend = updateDues(paymentReqDto.getPaymentFrom(), paymentReqDto.getPaymentTo(), paymentReqDto.getAmount().negate(), paymentReqDto.getCircleName(),payment);
+            paymentReqDto.setAmount(paymentReqDto.getAmount().negate());
+            System.out.println(payment.getPaymentAmount());
         }
         else {
-            userFriend = updateDues(paymentReqDto.getPaymentTo(), paymentReqDto.getPaymentFrom(), paymentReqDto.getAmount(), paymentReqDto.getCircleName(),payment,false);
+            userFriend = updateDues(paymentReqDto.getPaymentTo(), paymentReqDto.getPaymentFrom(), paymentReqDto.getAmount(), paymentReqDto.getCircleName(),payment);
+            paymentReqDto.setAmount(paymentReqDto.getAmount());
         }
 
         Circle circle = circleRepository.findByName(paymentReqDto.getCircleName());
-
-
 
         paymentPopulator.toPayment(payment, userFriend,circle, paymentReqDto.getAmount());
 
         return paymentRepository.save(payment);
     }
 
-    public UserFriend updateDues(int smallerId, int biggerId, BigDecimal amount, String circleName,Payment payment, boolean doSubtract){
+    @Override
+    public boolean deletePayment(int id) {
+
+        Payment payment = paymentRepository.findById(id).orElse(null);
+        UserFriend paymentUserFriend = payment.getUserFriend();
+
+        paymentUserFriend.setMoneyOwed(paymentUserFriend.getMoneyOwed().subtract(payment.getPaymentAmount()));
+        paymentUserFriend.getUserFriendCircle().stream()
+                    .filter(ufc -> ufc.getCircle().getId() == payment.getCircle().getId())
+                    .findFirst()
+                    .ifPresent(ufc -> ufc.setOwesInGroup(ufc.getOwesInGroup().subtract(payment.getPaymentAmount())));
+
+
+        userFriendRepository.save(paymentUserFriend);
+        paymentRepository.delete(payment);
+
+
+        return false;
+    }
+
+    public UserFriend updateDues(int smallerId, int biggerId, BigDecimal amount, String circleName,Payment payment){
+
         UserFriend userFriend = userFriendRepository.findBySmaller_IdAndBigger_Id(smallerId, biggerId);
-        userFriend.setMoneyOwed(doSubtract?userFriend.getMoneyOwed().subtract(amount.subtract(payment.getPaymentAmount())):userFriend.getMoneyOwed().add(amount.subtract(payment.getPaymentAmount())));
-        userFriend.getUserFriendCircle().stream()
-                .filter(ufc -> ufc.getCircle().getName().equals(circleName))
-                .findFirst()
-                .ifPresent(ufcFiltered -> ufcFiltered.setOwesInGroup(doSubtract?ufcFiltered.getOwesInGroup().subtract(amount.subtract(payment.getPaymentAmount())):ufcFiltered.getOwesInGroup().add(amount.subtract(payment.getPaymentAmount()))));
+
+        if(circleName.equals(payment.getCircle().getName()))
+        {
+            userFriend.setMoneyOwed(userFriend.getMoneyOwed().add(amount.subtract(amount.intValue() > 0 ? payment.getPaymentAmount().negate() : payment.getPaymentAmount())));
+            userFriend.getUserFriendCircle().stream()
+                    .filter(ufc -> ufc.getCircle().getName().equals(circleName))
+                    .findFirst()
+                    .ifPresent(ufcFiltered -> ufcFiltered.setOwesInGroup(ufcFiltered.getOwesInGroup().add(amount.subtract(amount.intValue() > 0 ? payment.getPaymentAmount().negate() : payment.getPaymentAmount()))));
+        }
+        else {
+            userFriend.setMoneyOwed(userFriend.getMoneyOwed().add(amount).subtract(amount.intValue() > 0 ? payment.getPaymentAmount().negate() : payment.getPaymentAmount()));
+            userFriend.getUserFriendCircle().stream()
+                    .filter(ufc -> ufc.getCircle().getName().equals(circleName))
+                    .findFirst()
+                    .ifPresent(ufcFiltered -> ufcFiltered.setOwesInGroup(ufcFiltered.getOwesInGroup().add(amount)));
+        }
 
         if(!circleName.equals(payment.getCircle().getName())){
             userFriend.getUserFriendCircle().stream()
                     .filter(ufc -> ufc.getCircle().getName().equals(payment.getCircle().getName()))
                     .findFirst()
-                    .ifPresent(ufcFiltered -> ufcFiltered.setOwesInGroup(!doSubtract?ufcFiltered.getOwesInGroup().subtract(amount.subtract(payment.getPaymentAmount())):ufcFiltered.getOwesInGroup().add(amount.subtract(payment.getPaymentAmount()))));
+                    .ifPresent(ufcFiltered -> ufcFiltered.setOwesInGroup(ufcFiltered.getOwesInGroup().subtract(amount.intValue()>0?payment.getPaymentAmount().negate():payment.getPaymentAmount())));
         }
+        return userFriend;
+    }
+
+
+    public UserFriend createDues(int smallerId, int biggerId, BigDecimal amount, String circleName){
+        UserFriend userFriend = userFriendRepository.findBySmaller_IdAndBigger_Id(smallerId, biggerId);
+        userFriend.setMoneyOwed(userFriend.getMoneyOwed().add(amount));
+        userFriend.getUserFriendCircle().stream()
+                .filter(ufc -> ufc.getCircle().getName().equals(circleName))
+                .findFirst()
+                .ifPresent(ufcFiltered -> ufcFiltered.setOwesInGroup(ufcFiltered.getOwesInGroup().add(amount)));
         return userFriend;
     }
 }
