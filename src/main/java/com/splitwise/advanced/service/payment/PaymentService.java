@@ -11,4 +11,6 @@ public interface PaymentService {
     Payment createPayment(PaymentReqDto paymentReqDto);
 
     Payment updatePayment(PaymentReqDto paymentReqDto);
+
+    boolean deletePayment(int id);
 }
