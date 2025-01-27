@@ -1,6 +1,7 @@
 package com.splitwise.advanced.controller;
 
 import com.splitwise.advanced.entities.preference.Preference;
+import com.splitwise.advanced.entities.timezone.TimeZone;
 import com.splitwise.advanced.entities.user.User;
 import com.splitwise.advanced.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +60,13 @@ public class UserController {
         User user = userRepository.findByFullName(userName);
         preference.setId(user.getId());
         user.setPreference(preference);
+        return userRepository.save(user);
+    }
+
+    @PutMapping("/timezone")
+    public User updateTimeZone(@RequestParam String userName, @RequestBody TimeZone timeZone){
+        User user = userRepository.findByFullName(userName);
+        user.setTimeZone(timeZone);
         return userRepository.save(user);
     }
 
