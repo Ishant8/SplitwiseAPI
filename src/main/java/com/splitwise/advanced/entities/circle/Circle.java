@@ -110,9 +110,11 @@ public class Circle {
     public void removeUser(String userName){
         UserCircle userCircle = users.stream().filter(userCirc -> userCirc.getUser().getFullName().equals(userName)).findFirst().orElse(null);
         users.remove(userCircle);
-        UserFriendCircle ufc1 = userFriendCircle.stream().filter(ufc -> ufc.getUserFriend().getSmaller().getFullName().equals(userName) || ufc.getUserFriend().getBigger().getFullName().equals(userName)).findFirst().orElse(null);
-        if(ufc1 != null) {
-            userFriendCircle.remove(ufc1);
+        List<UserFriendCircle> ufc1 = userFriendCircle.stream().filter(ufc -> ufc.getUserFriend().getSmaller().getFullName().equals(userName) || ufc.getUserFriend().getBigger().getFullName().equals(userName)).toList();
+        if(!ufc1.isEmpty()) {
+            for(UserFriendCircle userFrenCirc: ufc1){
+                userFriendCircle.remove(userFrenCirc);
+            }
         }
     }
 

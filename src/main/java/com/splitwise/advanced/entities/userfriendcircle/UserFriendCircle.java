@@ -27,7 +27,7 @@ public class UserFriendCircle {
     private Circle circle;
 
     @Column(name = "owes_in_group", precision = 10, scale = 2)
-    private BigDecimal owesInGroup;
+    private BigDecimal owesInGroup = BigDecimal.ZERO;
 
     public UserFriendCircle() {
     }

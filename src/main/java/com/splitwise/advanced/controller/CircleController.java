@@ -5,8 +5,10 @@ import com.splitwise.advanced.entities.circle.Circle;
 import com.splitwise.advanced.entities.user.User;
 import com.splitwise.advanced.entities.usercircle.UserCircle;
 import com.splitwise.advanced.entities.userfriend.UserFriend;
+import com.splitwise.advanced.entities.userfriendcircle.UserFriendCircle;
 import com.splitwise.advanced.mapper.CirclePopulator;
 import com.splitwise.advanced.repository.CircleRepository;
+import com.splitwise.advanced.repository.UserFriendCircleRepository;
 import com.splitwise.advanced.repository.UserRepository;
 import com.splitwise.advanced.service.circle.CircleService;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +23,13 @@ public class CircleController {
     private final CircleRepository circleRepository;
     private final UserRepository userRepository;
     private final CircleService circleService;
+    private final UserFriendCircleRepository userFriendCircleRepository;
 
-    public CircleController(CircleRepository circleRepository, UserRepository userRepository, CircleService circleService) {
+    public CircleController(CircleRepository circleRepository, UserRepository userRepository, CircleService circleService, UserFriendCircleRepository userFriendCircleRepository) {
         this.circleRepository = circleRepository;
         this.userRepository = userRepository;
         this.circleService = circleService;
+        this.userFriendCircleRepository = userFriendCircleRepository;
     }
 
     @PostMapping("/add")
@@ -78,6 +82,7 @@ public class CircleController {
     @DeleteMapping("/delete")
     public String deleteCircle(@RequestParam String circleName) {
         Circle circle = circleRepository.findByName(circleName);
+
         circleRepository.delete(circle);
         return circleName + " has been deleted";
     }
