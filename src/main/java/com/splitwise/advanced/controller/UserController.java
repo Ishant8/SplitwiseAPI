@@ -2,6 +2,7 @@ package com.splitwise.advanced.controller;
 
 import com.splitwise.advanced.entities.preference.Preference;
 import com.splitwise.advanced.entities.user.User;
+import com.splitwise.advanced.entities.userfriend.UserFriend;
 import com.splitwise.advanced.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class UserController {
         return savedUser;
     }
 
-    @PostMapping("/friend")
+    @PutMapping("/friend")
     public User addFriend(@RequestParam String friendName, @RequestParam String fullName) {
         User user = userRepository.findByFullName(fullName);
         User friend = userRepository.findByFullName(friendName);
@@ -68,4 +69,45 @@ public class UserController {
         userRepository.delete(user);
         return "Deleted";
     }
+
+    @PutMapping("/unfriend")
+    public User unFriend(@RequestParam String userName, @RequestParam String friendName) {
+        User user = userRepository.findByFullName(userName);
+        User friend = userRepository.findByFullName(friendName);
+
+        if(user.getId() > friend.getId()) {
+
+//            //Initial Approach, iterates the list twice.
+//            UserFriend userFriend = user.getFriendsLinkedAsSmaller().stream().filter(uf -> uf.getSmaller().getId() == friend.getId()).findFirst().orElse(null);
+//            user.getFriendsLinkedAsSmaller().remove(userFriend);
+
+//            // We can also use iterator. Its a good appraoch
+//            Iterator<UserFriend> iterator = friendsList.iterator();
+//            UserFriend userFriend = null;
+//            while (iterator.hasNext()) {
+//                UserFriend uf = iterator.next();
+//                if (uf.getSmaller().getId() == friend.getId()) {
+//                    userFriend = uf;
+//                    iterator.remove();
+//                    break;
+//                }
+//            }
+
+            //right approach for what I want.
+
+            user.getFriendsLinkedAsBigger().removeIf(uf -> uf.getSmaller().getId() == friend.getId());
+            friend.getFriendsLinkedAsSmaller().removeIf(uf -> uf.getBigger().getId() == user.getId());
+        }
+        else {
+            user.getFriendsLinkedAsSmaller().removeIf(uf -> uf.getBigger().getId() == friend.getId());
+            friend.getFriendsLinkedAsBigger().removeIf(uf -> uf.getSmaller().getId() == user.getId());
+        }
+
+        System.out.println(user);
+
+        return userRepository.save(user);
+    }
+
+//    @PutMapping("/preference/update")
+//    public
 }
