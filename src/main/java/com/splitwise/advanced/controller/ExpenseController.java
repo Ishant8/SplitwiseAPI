@@ -44,8 +44,4 @@ public class ExpenseController {
         expenseService.deleteExpense(id);
     }
 
-//    @PostMapping("/user/add")
-//    public Expense addExpenseWithUser(@RequestBody Expense expense) {
-//
-//    }
 }

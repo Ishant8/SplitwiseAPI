@@ -46,7 +46,7 @@ public class User {
     @JoinColumn(name = "timezone_id")
     private TimeZone timeZone;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "currency_id")
     private Currency currency;
 
